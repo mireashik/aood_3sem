@@ -192,3 +192,76 @@ myStack -> Top = newElement; // Обновляем вершину стека
 ```
 
 Реализовать структуру данных СТЕК можно на основе массива или линейного списка. Рассмотрим пример реализации основных операций со стеком на основе связного списка.
+
+```c++
+#include <stddef.h>
+#include <stdio.h>
+#include <iostream>
+
+struct zveno {
+    int info = 0;
+    zveno* next;
+};
+
+int Print(zveno* &s) {
+    zveno *v = s;
+    if (v == NULL) {
+        printf("стек пуст\n");
+    }
+
+    while (v != NULL) {
+        printf("%d ", v->info);
+        v = v->next;
+    }
+
+    cout << "\n";
+    return 1;
+}
+
+zveno* Push(zveno* &s, int a) {
+    zveno *v;
+    v = new zveno;
+    v->info = a;
+    v->next = s;
+    s = v;
+    return s;
+}
+
+zveno* Pop(zveno* &s) {
+    zveno *v = s;
+    s = s->next;
+    delete v;
+    return s;
+}
+
+int Empty(zveno* &s) {
+    if (s == NULL) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int main() {
+    zveno *theStack;
+    theStack = new zveno;
+
+    Print(theStack);
+    Push(theStack, 20);
+    Push(theStack, 40);
+    Push(theStack, 60);
+    Push(theStack, 80);
+
+    Print(theStack);
+
+    Pop(theStack);
+    Pop(theStack);
+
+    Print(theStack);
+
+    Push(theStack, 100);
+    Print(theStack);
+
+    return 1;
+}
+```
