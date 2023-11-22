@@ -187,9 +187,9 @@ Stack* myStack = new Stack;
 
 // Добавление элемента в стек
 Single_List* newElement = new Single_List;
-newElement->data = 42;
-newElement->next = myStack->Top; // Присваиваем указателю next значение текущей вершины
-myStack->Top = newElement; // Обновляем вершину стека
+newElement -> data = 42;
+newElement -> next = myStack -> Top; // Присваиваем указателю next значение текущей вершины
+myStack -> Top = newElement; // Обновляем вершину стека
 
 // После этого вершина стека будет указывать на новый элемент с данными 42.
 ```
