@@ -198,11 +198,13 @@ myStack -> Top = newElement; // Обновляем вершину стека
 #include <stdio.h>
 #include <iostream>
 
+// Определение структуры zveno
 struct zveno {
     int info = 0;
     zveno* next;
 };
 
+// Функция для вывода содержимого стека
 int Print(zveno* &s) {
     zveno *v = s;
     if (v == NULL) {
@@ -218,6 +220,7 @@ int Print(zveno* &s) {
     return 1;
 }
 
+// Функция для добавления элемента в стек
 zveno* Push(zveno* &s, int a) {
     zveno *v;
     v = new zveno;
@@ -227,6 +230,7 @@ zveno* Push(zveno* &s, int a) {
     return s;
 }
 
+// Функция для удаления элемента из стека
 zveno* Pop(zveno* &s) {
     zveno *v = s;
     s = s->next;
@@ -234,6 +238,7 @@ zveno* Pop(zveno* &s) {
     return s;
 }
 
+// Функция для проверки, пуст ли стек
 int Empty(zveno* &s) {
     if (s == NULL) {
         return 1;
@@ -242,6 +247,7 @@ int Empty(zveno* &s) {
     }
 }
 
+// Главная функция программы
 int main() {
     zveno *theStack;
     theStack = new zveno;
