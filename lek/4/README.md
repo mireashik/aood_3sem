@@ -5,6 +5,123 @@
 - односвязный список
 
 ### 1.1. Кольцевая очередь
+Первый элемент не удаляется и не выходит, он переходит в конец очереди.
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/b1709e71-a12e-485d-96ca-b23f690a1684)
+
+- добавить новый элемент в очередь;
+- проверка, очереди на пустоту;
+- проверка, очередь на полноту;
+- очистка очереди (удаление всех элементов очереди);
+- вытянуть 1 элемент из очереди и поместить в конец очереди.
+
+```c++
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class QueueRing {
+private:
+    T* queue;       // очередь в виде массива
+    int count;      // текущая длина очереди
+    int maxCount;   // максимальный размер очереди
+
+    void Copy(const QueueRing<T>& obj) {
+        // Метод, осуществляющий копирование очереди
+        // ... (см. ваш код для полного описания)
+    }
+
+public:
+    // Конструктор
+    QueueRing(int _maxCount) {
+        // ... (см. ваш код для полного описания)
+    }
+
+    // Конструктор копирования
+    QueueRing(const QueueRing& obj) {
+        Copy(obj);
+    }
+
+    // Оператор копирования
+    QueueRing<T> operator=(const QueueRing& obj) {
+        Copy(obj);
+        return *this;
+    }
+
+    // Деструктор
+    ~QueueRing() {
+        // ... (см. ваш код для полного описания)
+    }
+
+    // Очистка очереди
+    void Clear() {
+        count = 0;
+    }
+
+    // Проверка, пуста ли очередь?
+    bool isEmpty() {
+        return count == 0;
+    }
+
+    // Получить количество элементов очереди
+    int Count() {
+        return count;
+    }
+
+    // Проверка, заполнена ли очередь?
+    bool isFull() {
+        return count == maxCount;
+    }
+
+    // Добавить новый элемент в очередь
+    void Add(T item) {
+        if (!isFull())
+            queue[count++] = item;
+    }
+
+    // Вытянуть первый элемент из очереди и поместить в конец очереди
+    bool Move() {
+        if (!isEmpty()) {
+            // ... (см. ваш код для полного описания)
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Метод, выводящий очередь
+    void Print(string msg) {
+        // ... (см. ваш код для полного описания)
+    }
+};
+
+int main() {
+    // Пример использования кольцевой очереди
+    QueueRing<int> Q(4);
+    Q.Print("Q(4): ");
+
+    Q.Add(25);
+    Q.Add(30);
+    Q.Add(70);
+    Q.Add(10);
+    Q.Add(7);
+    Q.Print("Q.Add(...): ");
+
+    Q.Move();
+    Q.Print("Q.Move(): ");
+
+    Q.Move();
+    Q.Print("Q.Move(): ");
+
+    QueueRing<int> Q2 = Q;
+    Q2.Print("Q2: ");
+
+    QueueRing<int> Q3 = Q;
+    Q3.Print("Q3: ");
+
+    return 0;
+}
+```
 
 ### 1.2. Очередь с приоритетом С++
 
