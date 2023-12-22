@@ -1,4 +1,4 @@
-![image](https://github.com/mireashik/aood_3sem/assets/49165758/8640c219-9ff7-4343-a297-38fde2a653cf)## Дерево поиска
+## Дерево поиска
 С числом ветвей > 2 – часто такие деревья называют мультивариантными (многопутевыми, сильноветвящимися) или K-деревьями (K-мерными). B-деревья (различные деревья Байера-МакКрейта с вариантами, например, 2-3-деревья, 2-3-4-деревья) и тому подобное.
 
 - сбалансированное дерево (уровень в левом и правом поддереве различаются либо на 0, либо на 1)
@@ -1188,6 +1188,8 @@ struct fib_heap {
 ![image](https://github.com/mireashik/aood_3sem/assets/49165758/be00a4bf-e986-4390-ac6c-4ff5949afc03)
 
 ![image](https://github.com/mireashik/aood_3sem/assets/49165758/a8fc56af-48af-41fc-91dd-1d631dbf5074)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/8640c219-9ff7-4343-a297-38fde2a653cf)
 
 ```c++
 void add(node* Node, node** bro, node* par = NULL) {
