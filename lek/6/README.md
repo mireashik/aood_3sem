@@ -1296,7 +1296,11 @@ int extract_min() {
 
 ![image](https://github.com/mireashik/aood_3sem/assets/49165758/8e5839e9-ac81-4a80-8100-4b8222f231f7)
 
-![image](https://github.com/mireashik/aood_3sem/assets/49165758/d287de4f-7406-49c9-ae83-c758c5f63481)
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/4a964732-6bb8-4faa-95e7-9d83206f83ed)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/ad18fbb0-08a5-4654-80b3-fd26ac9fe16c)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/aa3381fa-c34d-4e45-8659-1f7efdf9ff21)
 
 **Изменение приоритета элемента**
 
