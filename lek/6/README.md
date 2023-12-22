@@ -1189,8 +1189,6 @@ struct fib_heap {
 
 ![image](https://github.com/mireashik/aood_3sem/assets/49165758/a8fc56af-48af-41fc-91dd-1d631dbf5074)
 
-![image](https://github.com/mireashik/aood_3sem/assets/49165758/8640c219-9ff7-4343-a297-38fde2a653cf)
-
 ```c++
 void add(node* Node, node** bro, node* par = NULL) {
     if (*bro == NULL) {
