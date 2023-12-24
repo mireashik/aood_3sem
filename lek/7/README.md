@@ -144,25 +144,320 @@ graph = pointvertex; //заголовок списка вершин
 #### Непрерывная реализация
 Поиск в связных списках оказывается весьма утомительным.
 
+Иногда поиск в связных списках (выше) оказывается весьма утомительным. К тому же иногда нужен произвольный доступ к вершинам.
+<br>
+Для **непрерывного списка** смежности необходимо хранить счетчик, и для него использовать стандартное обозначение из теории графов: валентность вершины.
+<br>
+**Валентность вершины **- число смежных с ней вершин.
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/dd1b3505-0095-4e82-b520-aaa8ec758514)
+
+Реализация через непрерывные списки:
+```c++
+type
+  vertex = 1..maxvertex; // идентифицируем вершины по их индексам
+  counter = 0..maxvertex; // счетчик вершин
+  adjacencylist = array [vertex] of vertex;
+  graph = record
+  size: counter; // число вершин в графе
+  valence: array [vertex] of counter;
+  A: array [vertex] of adjacencylist
+end;
+```
+
 #### Смешанная реализация
+Непрерывный список - для вершин, связная память - для списков смежности
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/16bb5fca-541b-4118-846c-298719f2d5a4)
+
+```c++
+type
+  vertex = 1..maxvertex; // идентифицируем вершины по их индексам
+  counter = 0..maxvertex; // счетчик вершин
+  pointedge = edge;
+  edge = record
+  endpoint: vertex;
+  nextedge: pointedge
+  end;
+  graph = record
+  size: counter; // число вершин в графе
+  firstedge: array [vertex] of pointedge
+end;
+```
 
 #### Информационные поля
+Иногда необходима дополнительная информация о каждой вершины или каждого ребра
+<br>
+В связных списках - дополнительне поля
+<br>
+В непрерывных реализациях - через преобразования элементов массива
+
+Особо важным примером является организация сети через веса рёбер. Тогда используем таблицу смежности, где веса, а не 0 или 1.
 
 ### 2.2. Просмотр графа
+Исследовать все вершины графа (как было у двоичных деревьев), однако при просмотре дерева обычно есть корень, в графах корня нет. Просмотр 1 может начаться с любой произвольно взятой вершины.
 
 #### Метод просмотра графа в глубину
+Почти как прямой просмотр упорядоченного дерева
+<br>
+При новой вершине мы просматриваем в начале все смежные с ней вершины (и идём вниз по уровням), а после все остальные
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/b06e874a-af41-4ea9-83d5-9a925a917b60)
 
 #### Метод просмотра графа в ширину
+Почти как уровневый просмотр упорядоченного дерева
+<br>
+При новой вершине мы просматриваем **ВСЕ** смежные с ней вершины в начале только **на 1 уровне**, далее спускаемся вглубь
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/55abf83f-0f4d-42b5-b43c-e351c4bbe536)
 
 #### Алгоритм просмотра графа в глубину
+Просмотр в глубину - рекурсивный алгоритм
+<br>
+Если есть циклы - делаем массив visited и устанавлием булевую правду перед посещением какой-то вершины 
+<br>
+Если граф несвязный (и все вершины мы не просмотрим) - помещаем алгоритм в цикл, который гарантировано пройдёт по всем вершинам
+
+```c++
+procedure DepthFirst (var G: graph; procedure Visit(var v: vertex)); //Просмотр в глубину
+  // Pre: Граф G уже создан.
+  // Post: Процедура Visit была выполнена над каждой вершиной графа G
+  в порядке просмотра в глубину.
+  // Uses: Использует процедуру Traverse, которая выполняет рекурсивный
+  просмотр в глубину
+  var
+  visited: array [vertex] of Boolean;
+  v: vertex;
+  begin // процедура DepthFirst 
+  for всех v in G do
+    visited [v] := false;
+  for всех v in G do
+    if not visited [v] then
+      Traverse(v)
+end; // процедура DepthFirst
+```
+
+Рекурсия выполняется в следующей процедуре, которая должна быть объявлена внутри предыдущей
+
+```c++
+procedure Traverse (var v: vertex; procedure Visit(var v: vertex)); //Просмотр
+  // Pre: v является вершиной графа G.
+  // Post: Просмотр в глубину посредством процедуры Visit был завершен для v и всех вершин, смежных с v.
+  // Uses: Использует процедуру Traverse рекурсивно.
+  var w: vertex;
+  begin // процедура Traverse
+  visited [v] := true;
+  Visit(v);
+  for всех w смежных to v do
+  if not visited [w] then
+    Traverse(w)
+end; // процедура Traverse
+```
 
 #### Алгоритм просмотра графа в ширину
+Использование рекурсии и стека - эквивалентны, поэтому можно было использовать стек. Все непосещенные вершины смежные с текущий проталкиваются в стек, выталкивание из стека - следующая вершина.
+
+В ширине используется - очередь.
+
+```c++
+procedure BreadthFirst (var G: graph; procedure Visit(var v: vertex)); // Просмотр в ширину
+  // Pre: Граф G уже создан.
+  // Post: Процедура Visit выполнена для каждой вершины графа G, причем 
+  вершины выбирались в порядке просмотра в ширину.
+  // Uses: Использует пакет операций с очередью. 
+  type
+  queueentry = vertex;
+  var
+  Q: queuetype;
+  visited: array [vertex] of Boolean;
+  v,
+  w: vertex;
+  begin // процедура BreadthFirst 
+  for всех v in G do
+    visited [v] := false;
+  CreateQueue(Q);
+  for всех v in G do
+    if not visited [v] then
+    begin
+    Append(v, Q);
+    repeat
+    Serve(v, Q);
+  if not visited [v] then
+    begin
+    visited [v] := true;
+    Visit(v)
+  end;
+  for всех w смежных to v do
+    if not visited [w] then
+      Append(w, Q)
+      until QueueEmpty(Q)
+  end
+end; // процедура BreadthFirst
+```
 
 ### 3. Топологическая сортировка
+Топологическая сортировка - упорядочивание вершин бесконтурного ориентированного графа согласно частичному порядку, заданному ребрами орграфа на множестве его вершин
+<br>
+Ориентированный ациклический граф ‒ орграф без циклов, но могут быть «параллельные» пути
+
+Эта сортировка строит корректную последовательность выполнения действий, всякое из которых может зависеть от другого:
+- последовательность курсов
+- установки программ
+- makefile
+
+### 3.1. Постановка задачи
+Если G нужный нам граф, то **топологический порядок (сортировка)** - последовательный список всех вершин G, если имеется ребро v -> w, тогда v идёт перед w в списке. 
+<br>
+Это ациклические ориентированные графы.
+
+Примеры:
+1. Учебные курсы - вершины, рёбра - связи между ними, как следует проходить эти курсы
+2. Словарь технических терминов - термины имеют последовательность
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/66403668-a170-42b9-a3ca-fe83ed2e0fe2)
 
 ### 3.2. Алгоритм упорядочения в глубину
+В топологическом порядке нам важен последовательно добавлять одну вершину за другой, и проверять все вершины которые следуют до неё.
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/cf454ad0-1cce-4c28-bae9-ecb97fa3fd8e)
+
+Мы начинаем с последних вершин, в начале place = число вершин графа. 
+
+```c++
+procedure DepthTopSort (var G: graph; var T: toporder); // Топологическое упорядочение в глубину
+  //Pre: G является направленным графом без циклов, реализованным с 
+  непрерывным списком вершин и связными списками смежности.
+  //Post: Процедура выполняет просмотр графа G в глубину и генерирует 
+  результирующий топологический порядок в массиве T.
+  //Uses: Использует: процедура RecDepthSort выполняет рекурсивный просмотр 
+  в глубину.
+  var
+  visited: array [vertex] of Boolean; // проверяет, что G не содержит циклов
+  v: vertex; // очередная вершина, следующие за которой должны быть 
+  упорядочены 
+  place: counter; // следующая заполняемая позиция в топологическом порядке
+  begin //процедура DepthTopSort
+  for v := 1 to G.size do
+  visited [v] := false;
+  place := G.size;
+  for v := 1 to G.size do
+  if not visited [v] then
+  RecDepthSort(v, place, T);
+end; // процедура DepthTopSort
+```
+
+```c++
+procedure RecDepthSort (v: vertex; var place: counter; var T: toporder); // Рекурсивное упорядочение в глубину
+  // Pre: Параметр v является вершиной графа G, place является следующим 
+  местом в топологическом порядке T, которое следует определить (начиная с конца 
+  окончательно упорядоченного списка).
+  // Post: Процедура размещает все вершины, следующие за v, и, наконец, саму 
+  v, в топологическом порядке T, упорядочивая в глубину.
+  20
+  // Uses: Использует: глобальный массив visited и глобальный граф G;
+  процедуру RecDepthSort рекурсивно. 
+  var
+  curvertex: vertex; // вершина, смежная с v 
+  curedge: pointedge; // просматривает список вершин, смежных с v 
+  begin // процедура RecDepthSort 
+  visited [v] := true;
+  curedge := G.firstedge [v]; //найдем первую вершину, следующую за v 
+  while curedge nil do
+  begin
+  curvertex := curedge .endpoint; //curvertex есть вершина, смежная с v
+  if not visited [curvertex] then
+  RecDepthSort(curvertex, place, T);
+  //упорядочим вершины, следующие за curvertex 
+  curedge := curedge .nextedge // перейти к следующей непосредственно за 
+  вершиной v
+  end;
+  T [place] := v; // разместим саму v в топологическом порядке 
+  place := place – 1
+end; // процедура RecDepthSort
+```
 
 ### 3.3. Алгоритм упорядочения в ширину
+Мы начинаем с поиска вершины, которая должна быть первой в топологическом порядке
+<br>
+Вершины, помещаемые раньше - которые не расположены после других вершин
+
+```c++
+procedure BreadthTopSort (var G: graph; var T: toporder); // Топологическое упорядочение в ширину
+  // Pre: G является направленным графом без циклов, реализованным с 
+  непрерывным списком вершин и связными списками смежности.
+  // Post: Процедура выполняет просмотр графа G в ширину и генерирует 
+  результирующий топологический порядок в массиве T.
+  // Uses: Использует пакет для обработки очередей.
+  var
+  predecessorcount: array [vertex] of integer; // число непосредственных
+  предшественников каждой вершины 
+  Q: queue; // вершины, готовые к размещению в порядке
+  v, // вершина, посещаемая в настоящий момент
+  succ: vertex; // одна из непосредственно следующих за v вершин
+  curedge: pointedge; // просматривает список смежности для v
+  place: integer; // следующая позиция в топологическом порядке 
+  begin // процедура BreadthTopSort 
+  for v := 1 to G.size do // инициализируем все счетчики предшественников 
+  нулем 
+  predecessorcount [v] := 0;
+  for v := 1 to G.size do
+  begin // увеличим отсчет предшественников для последующих вершин
+  curedge := G.firstedge [v];
+  while curedge <> nil do begin
+  predecessorcount [curedge .endpoint] :=
+  predecessorcount [curedge .endpoint] + 1;
+  curedge := curedge .nextedge
+  end
+  end;
+  CreateQueue(Q);
+  for v := 1 to G.size do // поместим вершины, не имеющие предшественников, в
+  очередь
+  if predecessorcount [v] = 0 then
+  Append(v, Q);
+  place := 0; // начнем просмотр в ширину
+  while not QueueEmpty(Q) do begin
+  Serve(v, Q); // посетим вершину v, разместив ее в топологическом порядке 
+  place := place + 1;
+  T [place] := v;
+  curedge := G.firstedge [v]; // просмотр следующих за v вершин 
+  while curedge <> nil do begin //уменьшим отсчеты предшественников для 
+  каждой следующей вершины 
+  succ := curedge .endpoint;
+  predecessorcount [succ] := predecessorcount [succ] –1;
+  if predecessorcount [succ] =0 then // вершина succ не имеет следующих за ней, 
+  поэтому она готова к обработке
+  Append(succ, Q);
+  curedge := curedge .nextedge
+  end
+  end
+end; // процедура BreadthTopSort
+```
+
+### Ещё пару примеров
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/a3aa6688-fd92-4ffe-834d-ebc717c46f00)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/c00b27f6-46ad-4371-8318-bacb0fc5f9b4)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/dc90b48c-044d-4438-badb-e1048f0c1e8b)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/2a23c425-3f6e-4979-85cc-706fae93b21b)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/e5555e0e-ca1c-422e-8dd4-59e2d0b3644c)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/e74b5cdf-0f7e-4307-8472-acd6f87d5cdf)
+
+Как только увидели вершину в которой нет рёбер:
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/753d943e-6a1d-40a2-bb11-cebf5d0461b2)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/a3515df8-f349-4a75-8da1-8ee82a2d48f4)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/1afbbeb8-65d8-44d2-a4b9-104fc5168074)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/29d5ed51-9edb-439b-8de9-e6320c111ff0)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/a3c1ce19-dd71-4325-bb32-af04bac4265d)
+
 
 ### 3.4. Алгоритм экономного продвижения: кратчайшие маршруты
 
