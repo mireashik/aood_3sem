@@ -460,5 +460,267 @@ end; // процедура BreadthTopSort
 
 
 ### 3.4. Алгоритм экономного продвижения: кратчайшие маршруты
+Дан ориентированный граф G, каждое ребро имеет вес (стоимость, время). Нужно найти кратчайший маршрут с минимальными весами. 
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/c3a62303-eabc-47e4-995f-8ee847547c7e)
+
+Выбере ИСТОЧНИК - вершину 1. Наша задача в поиске мин. маршруте от вершины 1 к **КАЖДОЙ** вершине графа
+
+Множества S -  вершины, для которых уже известно кратчайшее расстояние от 1
+<br>
+Таблица D - расстояния для каждой вершины от 1 до v
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/24fd5248-327b-4ca1-8642-1200cb36363d)
+
+Множество S (покрашенные вершины), таблица D около каждой смежной вершины
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/45df4de2-3057-4adb-8fc5-11f26a1ccc76)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/3691f906-6170-4883-b8d3-45bd91930fc4)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/7b0b027e-eea0-4239-a290-aa5a986f318f)
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/2978ae3a-57dd-4635-9012-1f9521d06db6)
+
+Использование таблицы смежности обеспечивает произвольный доступ ко всем вершинам графа
+<br>
+К тому же таблица говорит не только о смежности, но и о весах
+
+```c++
+const
+maxvertex = // должно быть предоставлено; максимальное число вершин в графе
+infinity = maxint; 
+type 
+weight = integer;
+counter = 0..maxvertex;
+vertex = 1..maxvertex;
+adjacencytable = array [vertex, vertex] of weight;
+distancetable = array [vertex] of weight;
+var
+size: count; // число вершин в графе 
+cost: adjacencytable; // описывает граф
+D: distancetable; // кратчайшие расстояния от вершины 1
+```
+
+На входе - таблица смежности и число вершин в графе
+<br>
+На выходе - таблица минимальных расстояний
+
+```c++
+procedure Distance (size: counter; var cost: adjacencytable; var D: distancetable);
+  // Расстояние
+  // Pre: Дан направленный граф, имеющий size вершин с весами ребер, данными в таблице cost.
+  // Post: Процедура находит кратчайший путь от вершины 1 к каждой вершине графа и возвращает найденный ею путь в массиве D. 
+  var
+  final: array [vertex] of Boolean; // Найдено ли окончательное расстояние от 1 до v? Значение final [v] равно true, если и только если v принадлежит множеству S. 
+  i, // счетчик повторений для главного цикла
+  // В каждом шаге цикла заканчивается обработка одного расстояния.
+  w, // вершина, еще не добавленная в множество S 
+  v: vertex; // вершина с минимальным пробным расстоянием в D [ ] }
+  min: weight; // расстояние для v, равно D [v] 
+  begin // процедура Distance
+  final [1] := true; // инициализируем с единственной вершиной 1 в множестве S 
+  D[1] := 0;
+  for v := 2 to size do
+  begin
+  final [v] := false;
+  D[v] :=cost [1, v]
+  end;
+  for i := 2 to size do
+  begin // начнем главный цикл; на каждом шаге добавляем одну вершину v к S
+  min := infinity; // найдем вершину, ближайшую к вершине 1
+  for w := 2 to size do
+  if not final [w] then
+  if D[w] < min then
+  begin
+  v := w;
+  min := D[w]
+  end;
+  final [v] := true; // добавим v к множеству S
+  for w := 2 to size do // обновим оставшиеся расстояния в D
+  if not final [w] then
+  if min + cost [v, w] < D[w] then
+  D[w] := min + cost [v, w]
+  end
+end; // процедура Distance
+```
+
+Пример списка смежности 
+
+![image](https://github.com/mireashik/aood_3sem/assets/49165758/3226ec17-6b89-4be7-9526-7a6fcde4bf75) ![image](https://github.com/mireashik/aood_3sem/assets/49165758/8ab35200-c862-4f3e-aa4b-f8a58a9270a2)
+
+```c++
+STL
+#include <iostream>
+#include <vector>
+using namespace std;
+// Структура данных для хранения ребра Graph
+struct Edge {
+int src, dest;
+};
+// Класс для представления graphического объекта
+class Graph {
+  public:
+  // вектор векторов для представления списка смежности
+  vector<vector<int>> adjList;
+  // Конструктор Graphа
+  Graph(vector<Edge> const &edges, int n) {
+    // изменить размер вектора, чтобы он содержал `n` элементов типа `vector<int>`
+    adjList.resize(n);
+    // добавляем ребра в ориентированный graph
+    for (auto &edge: edges) {
+      // вставляем в конце
+      adjList[edge.src].push_back(edge.dest);
+      // раскомментируйте следующий код для неориентированного Graph
+      // adjList[edge.dest].push_back(edge.src);
+    }
+  }
+};
+```
+
+```c++
+// Функция для печати представления списка смежности Graph
+void printGraph(Graph const &graph, int n) {
+  for (int i = 0; i < n; i++) {
+  // вывести номер текущей вершины
+  cout << i << " ——> ";
+  // вывести все соседние вершины вершины `i`
+  for (int v: graph.adjList[i]) {
+  cout << v << " ";
+  }
+  cout << endl;
+  }
+}
+```
+
+```c++
+// Реализация Graph с использованием STL
+int main() {
+  // vector ребер Graph согласно схеме выше.
+  // Обратите внимание, что vector инициализации в приведенном ниже формате 
+  будет
+  // нормально работает в C++11, C++14, C++17, но не работает в C++98.
+  vector<Edge> edges = {
+    {0, 1}, {1, 2}, {2, 0}, {2, 1}, {3, 2}, {4, 5}, {5, 4}
+  };
+  // общее количество узлов в Graph (от 0 до 5)
+  int n = 6;
+  // построить Graph
+  Graph graph(edges, n);
+  // вывести представление списка смежности Graph
+  printGraph(graph, n);
+  return 0;
+}
+```
 
 ### Выводы
+Алгоритмы обхода графов. Основными алгоритмами обхода графов являются:
+1. Поиск в ширину.
+2. Поиск в глубину.
+
+Поиск в ширину подразумевает поуровневое исследование графа
+
+Каждая вершина может находиться в одном из 3 состояний:
+0 ‒ оранжевый – необнаруженная вершина;
+1 ‒зеленый – обнаруженная, но не посещенная вершина;
+2 ‒ серый – обработанная вершина.
+Фиолетовый – рассматриваемая вершина.
+
+```c++
+#include <iostream>
+#include <queue> // очередь
+using namespace std;
+int main() {
+  queue<int> Queue;
+  int mas[7][7] = { { 0, 1, 1, 0, 0, 0, 1 }, // матрица смежности
+  { 1, 0, 1, 1, 0, 0, 0 },
+  { 1, 1, 0, 0, 0, 0, 0 },
+  { 0, 1, 0, 0, 1, 0, 0 },
+  { 0, 0, 0, 1, 0, 1, 0 },
+  { 0, 0, 0, 0, 1, 0, 1 },
+  { 1, 0, 0, 0, 0, 1, 0 } };
+  
+  int nodes[7]; // вершины графа
+  for (int i = 0; i < 7; i++)
+    nodes[i] = 0; // исходно все вершины равны 0
+  Queue.push(0); // помещаем в очередь первую вершину
+  while (!Queue.empty()) { // пока очередь не пуста
+    int node = Queue.front(); // извлекаем вершину
+    Queue.pop();
+    nodes[node] = 2; // отмечаем ее как посещенную
+    for (int j = 0; j < 7; j++) { // проверяем для нее все смежные вершины
+      if (mas[node][j] == 1 && nodes[j] == 0) { // если вершина смежная и не обнаружена
+      Queue.push(j); // добавляем ее в очередь
+      nodes[j] = 1; // отмечаем вершину как обнаруженную
+      }
+    }
+    cout << node + 1 << endl; // выводим номер вершины
+  }
+  cin.get();
+  return 0;
+}
+```
+
+### Задача поиска кратчайшего пути
+```c++
+#include <iostream>
+#include <queue> // очередь
+#include <stack> // стек
+using namespace std;
+struct Edge {
+ int begin;
+ int end;
+};
+
+int main() {
+  system("chcp 1251");
+  system("cls");
+  queue<int> Queue;
+  stack<Edge> Edges;
+  int req;
+  Edge e;
+  int mas[7][7] = {
+  { 0, 1, 1, 0, 0, 0, 1 },
+  { 1, 0, 1, 1, 0, 0, 0 },
+  { 1, 1, 0, 0, 0, 0, 0 },
+  { 0, 1, 0, 0, 1, 0, 0 },
+  { 0, 0, 0, 1, 0, 1, 0 },
+  { 0, 0, 0, 0, 1, 0, 1 },
+  { 1, 0, 0, 0, 0, 1, 0 }
+  };
+  
+  int nodes[7]; // вершины графа
+  for (int i = 0; i < 7; i++) // исходно все вершины равны 0
+    nodes[i] = 0;
+  cout << "N = "; cin >> req; req--;
+  Queue.push(0); // помещаем в очередь первую вершину
+  while (!Queue.empty()){
+    int node = Queue.front(); // извлекаем вершину
+    Queue.pop();
+    nodes[node] = 2; // отмечаем ее как посещенную
+    for (int j = 0; j < 7; j++) {
+      if (mas[node][j] == 1 && nodes[j] == 0) { // если вершина смежная и не обнаружена
+        Queue.push(j); // добавляем ее в очередь
+        nodes[j] = 1; // отмечаем вершину как обнаруженную
+        e.begin = node; e.end = j;
+        Edges.push(e);
+        if (node == req)
+          break;
+      }
+    }
+    cout << node + 1 << endl; // выводим номер вершины
+  }
+  cout << "Путь до вершины " << req + 1 << endl;
+  cout << req + 1;
+  while (!Edges.empty()) {
+    e = Edges.top();
+    Edges.pop();
+    if (e.end == req) {
+      req = e.begin;
+      cout << " <- " << req + 1;
+    }
+  }
+  cin.get();
+  cin.get();
+  return 0;
+}
